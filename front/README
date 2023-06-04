@@ -1,0 +1,26 @@
+# Projeto Fullstack -Front
+
+
+# Sobre a aplicação
+
+Foi desenvolvida durante a conclusão do módulo 6 do curso de desenvolvimento full stack da Kenzie Academy. A aplicação se propõe em um cadastro de clientes que poderá conter muitos contatos associados.
+
+*É necessário cadastrar um usuário apenas por insomnia na rota /user, logar e assim cadastrar os clientes para a aplicação front end.*
+
+
+# Features
+-login Cliente
+-Cadastro dos contatos
+-Listar contatos
+
+# Tecnologias
+
+JavaScript
+React
+
+
+# Instalação e uso
+
+Faça o fork do repositório e em seguida execute o comando git clone para clonar o projeto para seu dispositivo. Dentro da pasta do projeto, execute o comando abaixo para instalar todas as dependências da aplicação.
+
+yarn install
