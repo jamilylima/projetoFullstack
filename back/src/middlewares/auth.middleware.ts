@@ -5,7 +5,7 @@ import "dotenv/config"
 
 const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization
-
+   
     if (!token) {
         return res.status(401).json({
             message: "invalid token"
@@ -20,9 +20,9 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
                 message: "invalid token"
             })
         }
-
+       
         res.locals.userId = decoded.sub
-
+        
         return next()
     })
 }

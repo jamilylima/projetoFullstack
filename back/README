@@ -85,14 +85,14 @@ yarn dev
 	"email":"test@gmail.com",
 }
 
-/GET /cliente - Lista todos os cliente 
+/GET /cliente - Lista todos os clientes 
 /GET /cliente/:id - Lista  cliente por Id
-/PATCH/cliente/:id - Atualiza contatos por Id
+/PATCH/cliente/:id - Atualiza clientes por Id
 
 -------------------------------------------------
 
 
-/POST /contatos - Cadastro de contatos, Auth bearer token 
+/POST /contatos/:clienteId - Cadastro de contatos, Auth bearer token 
 {
 	"name":"teste",
 	"telefone":"9934774662"

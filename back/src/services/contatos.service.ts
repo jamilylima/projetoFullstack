@@ -1,9 +1,10 @@
   
-import { ContatosRequest } from "../interfaces/contato.interface";
+import {  ContatoResponseList, ContatosRequest, TContatoUpdateRequest} from "../interfaces/contato.interface";
 import { Contato } from "../entities/contatos.entitie";
 import { AppDataSource } from "../../src/data-source"
 import { Cliente } from "../entities/cliente.entitie";
 import { AppError } from "../errors/AppError";
+import { contatoResponse,  contatoSchemaUpdate, contatosSchemaResponse } from "../schemas/contato.schema";
 
 
 
@@ -12,43 +13,65 @@ import { AppError } from "../errors/AppError";
 
 const createContatoService = async (clienteId: string, {
   name, telefone, email,}:ContatosRequest
-): Promise<Contato> => {
+) => {
   
     const clienteRepository = AppDataSource.getRepository(Cliente);
     const contatoRepository = AppDataSource.getRepository(Contato);
+    
   
-  
-    const cliente = await clienteRepository.findOneBy({
+    const cliente = await clienteRepository.findOneBy
+({
       id: clienteId
-  })
-  
-  const contato = contatoRepository.create({
-    name,
-    telefone,
-    email,
-    cliente: cliente!
     }
-     
-  )
+    )
+   
+   
+    
+    const contato = contatoRepository.create({
+      name,
+      telefone,
+      email,
+      cliente: cliente!
+    }
+    
+    )
+    
   await contatoRepository.save(contato)
   
-  
-  return contato
+
+  return contatoResponse.parse(contato)
 };
   
 
 
-const listContatosClienteService = async ():Promise<Contato[]> => {
+
+const listContatosClienteService = async (id: string): Promise<ContatoResponseList> => {
+  
   const contatoRepository = AppDataSource.getRepository(Contato)
-  const contatos = await contatoRepository.find()
-  return contatos
+  const clienteRepository = AppDataSource.getRepository(Cliente)
+
+  const cliente: Cliente | null = await clienteRepository.findOneBy({
+    id: id
+  })
+  
+  if (!cliente) {
+    throw new AppError("Cliente not found", 404)
+}
+
+  const contatos: Contato[] = await contatoRepository.find({
+    where: {
+        cliente: cliente
+    }
+})
+  return contatosSchemaResponse.parse(contatos)
 };
 
 
 
-const updateContatoService = async (id:string, name:string,
-  email:string,
-  telefone:string): Promise<ContatosRequest> => {
+
+
+
+const updateContatoService = async (id:string, data:TContatoUpdateRequest)=> {
   
   const contatoRepository = AppDataSource.getRepository(Contato);
   
@@ -58,19 +81,15 @@ const updateContatoService = async (id:string, name:string,
       throw new AppError( "Contact not found",400);
   }
   
-
   const newContato =  contatoRepository.create({
     ...contatoId,
-    name,
-    email,
-    telefone,
+    ...data
     
 });
   
   await contatoRepository.save(newContato)
-
-
-  return newContato
+  
+  return contatoSchemaUpdate.parse(newContato)
 };
 
 
@@ -78,10 +97,8 @@ const deletecontatoService = async(id: string)=> {
 
   const contatoRepository = AppDataSource.getRepository(Contato)
 
-  const contatop  = await contatoRepository.find()
-
-  const contato = contatop.find(contato => contato.id === id)
-  
+  const contato: Contato | null = await contatoRepository.findOneBy({ id: id })
+ 
   if(!contato){
         throw new AppError( "Contact not found",404)
   }

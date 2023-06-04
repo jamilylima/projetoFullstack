@@ -44,7 +44,7 @@ const userLoginService = async ({ email, password }: IUserloginRequest):Promise<
     const users = await userDb.find();
   
     const account = users.find((user) => user.email === email);
-    console.log(account)
+    
   
     if (!account) {
       throw new AppError( "Email ou senha errado",404);

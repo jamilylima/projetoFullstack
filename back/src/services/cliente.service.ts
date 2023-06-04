@@ -1,14 +1,14 @@
 import { AppDataSource } from "../../src/data-source"
-import { TCliente, TClienteRequest, TClienteResponse } from "../interfaces/cliente.interface"
+import {  TClienteRequest, TClienteResponse } from "../interfaces/cliente.interface"
 import { hash } from "bcryptjs";
 import { Cliente } from "../entities/cliente.entitie";
 import {  clienteSchemaResponse } from "../schemas/cliente.schema";
-import { AppError, handleError } from "../errors/AppError";
+import { AppError} from "../errors/AppError";
 import { IUserloginRequest } from "../interfaces/user.interface";
 import { compare } from "bcryptjs";
 import jwt from "jsonwebtoken";
 import "dotenv/config"
-import { error } from "console";
+
 
 
 
@@ -44,13 +44,13 @@ const createClienteService = async (data: TClienteRequest): Promise <TClienteRes
 
 
 
-const clienteLoginService = async ({ email, password }: IUserloginRequest):Promise<string> => {
+const clienteLoginService = async ({ email, password }: IUserloginRequest) => {
     const clienteDb = AppDataSource.getRepository(Cliente);
   
     const clientes = await clienteDb.find();
   
     const account = clientes.find((cliente) => cliente.email === email);
-    console.log(account)
+   
   
     if (!account) {
       throw new AppError( "Email ou senha errado",404);
@@ -62,10 +62,12 @@ const clienteLoginService = async ({ email, password }: IUserloginRequest):Promi
     }
   
     const token = jwt.sign({ email: email }, String(process.env.SECRET_KEY), {
-      expiresIn: "1d",
+        expiresIn: "1d",
+        
     });
   
-    return token;
+    return { token, userId: account.id };
+
 };
 
 
@@ -73,8 +75,7 @@ const listClientesService = async():Promise<Cliente[]> => {
 
     const clienteRepository = AppDataSource.getRepository(Cliente);
     const clientList = await clienteRepository.find();
-
-    return clientList;
+    return clientList
     
 };
 
@@ -83,7 +84,8 @@ const listClientesService = async():Promise<Cliente[]> => {
 
 const listClienteService = async (id: string) => {
     const clienteDb = AppDataSource.getRepository(Cliente);
-    return await clienteDb.findOneBy({ id: id });
+    const cliente = await clienteDb.findOneBy({ id: id });
+    return clienteSchemaResponse.parse(cliente)
 };
 
 
